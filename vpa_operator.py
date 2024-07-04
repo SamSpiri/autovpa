@@ -36,8 +36,8 @@ def update_vpa_configs():
     global VPA_CONFIGS
     VPA_CONFIGS = get_all_configs()
 
-def filter_resources(namespace, annotations, **_):
-    return namespace in VPA_CONFIGS and str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
+def filter_resources(namespace, annotations, name, **_):
+    return namespace in VPA_CONFIGS and name not in VPA_CONFIGS[namespace] and str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
 
 def filter_resources_only_namespace(namespace, **_):
     return namespace in VPA_CONFIGS
