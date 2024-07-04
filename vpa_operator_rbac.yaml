@@ -19,7 +19,7 @@ rules:
     verbs: ["create", "delete"]
   - apiGroups: ["autoscaling.k8s.io"]
     resources: ["autovpaconfigs"]
-    verbs: ["get", "list", "watch", "update", "patch"]]
+    verbs: ["get", "list", "watch", "update", "patch"]
 
 ---
 
