@@ -39,6 +39,9 @@ def update_vpa_configs():
 def filter_resources(namespace, annotations, **_):
     return namespace in VPA_CONFIGS and str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
 
+def filter_resources_only_namespace(namespace, **_):
+    return namespace in VPA_CONFIGS
+
 def create_vpa_for_deployment(name, namespace):
     api_instance = kubernetes.client.CustomObjectsApi()
     vpa_body = {
@@ -102,7 +105,7 @@ def create_vpa(body, meta, spec, name, namespace, **_):
 def delete_vpa(body, meta, spec, name, namespace, **_):
     delete_vpa_for_deployment(name, namespace)
 
-@kopf.on.update('deployments')
+@kopf.on.update('deployments', when=filter_resources_only_namespace)
 def update_deployment(body, meta, spec, name, namespace, annotations, **_):
     vpa_enabled = str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
     excluded_deployments = VPA_CONFIGS[namespace]
