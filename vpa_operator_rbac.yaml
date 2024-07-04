@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: autovpa-operator
+  namespace: default  # Change this to the namespace where the operator is deployed
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: autovpa-operator-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["autoscaling.k8s.io"]
+    resources: ["verticalpodautoscalers"]
+    verbs: ["create", "delete"]
+  - apiGroups: ["autoscaling.k8s.io"]
+    resources: ["autovpaconfigs"]
+    verbs: ["get", "list", "watch", "update", "patch"]]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: autovpa-operator-binding
+subjects:
+  - kind: ServiceAccount
+    name: autovpa-operator
+    namespace: default  # Change this to the namespace where the operator is deployed
+roleRef:
+  kind: ClusterRole
+  name: autovpa-operator-role
+  apiGroup: rbac.authorization.k8s.io

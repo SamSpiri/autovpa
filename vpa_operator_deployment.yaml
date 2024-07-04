@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autovpa-operator
+  namespace: default  # Change this to your desired namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autovpa-operator
+  template:
+    metadata:
+      labels:
+        app: autovpa-operator
+    spec:
+      serviceAccountName: autovpa-operator
+      containers:
+        - name: autovpa-operator
+          image: doomstar/autovpa:latest
+          imagePullPolicy: Always

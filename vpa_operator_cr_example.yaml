@@ -1,0 +1,9 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: AutoVPA
+metadata:
+  # Hardcoded name. Only one config per namespace is allowed
+  name: autoautovpa-operator-config
+  namespace: default
+spec:
+  excludedDeployments:
+    - "exclude-this-deployment"

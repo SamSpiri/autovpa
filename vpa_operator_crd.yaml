@@ -1,0 +1,30 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: autovpaconfigs.autoscaling.k8s.io
+  annotations:
+    api-approved.kubernetes.io: "unapproved"
+spec:
+  group: autoscaling.k8s.io
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                excludedDeployments:
+                  type: array
+                  items:
+                    type: string
+  scope: Namespaced
+  names:
+    plural: autovpaconfigs
+    singular: autovpaconfig
+    kind: AutoVPA
+    shortNames:
+      - autovpa
