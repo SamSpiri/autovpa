@@ -24,7 +24,11 @@ def get_all_configs():
         for item in crds["items"]:
             namespace = item["metadata"]["namespace"]
             excluded_deployments = deep_get(item, "spec.excludedDeployments", [])
-            configs[namespace] = excluded_deployments
+            update_mode = deep_get(item, "spec.updateMode", "Auto")
+            configs[namespace] = {
+                "excluded_deployments": excluded_deployments,
+                "update_mode": update_mode
+            }
     except ApiException as e:
         if e.status == 404:
             logger.info("No VPAConfig CRs found")
@@ -37,13 +41,14 @@ def update_vpa_configs():
     VPA_CONFIGS = get_all_configs()
 
 def filter_resources(namespace, annotations, name, **_):
-    return namespace in VPA_CONFIGS and name not in VPA_CONFIGS[namespace] and str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
+    return namespace in VPA_CONFIGS and name not in VPA_CONFIGS[namespace]["excluded_deployments"] and str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
 
 def filter_resources_only_namespace(namespace, **_):
     return namespace in VPA_CONFIGS
 
 def create_vpa_for_deployment(name, namespace):
     api_instance = kubernetes.client.CustomObjectsApi()
+    update_mode = VPA_CONFIGS[namespace]["update_mode"]
     vpa_body = {
         "apiVersion": "autoscaling.k8s.io/v1",
         "kind": "VerticalPodAutoscaler",
@@ -58,7 +63,7 @@ def create_vpa_for_deployment(name, namespace):
                 "name": name
             },
             "updatePolicy": {
-                "updateMode": "Auto"
+                "updateMode": update_mode
             }
         }
     }
@@ -108,19 +113,18 @@ def delete_vpa(body, meta, spec, name, namespace, **_):
 @kopf.on.update('deployments', when=filter_resources_only_namespace)
 def update_deployment(body, meta, spec, name, namespace, annotations, **_):
     vpa_enabled = str2bool(annotations.get("autovpa.autoscaling.k8s.io/enabled", "true"))
-    excluded_deployments = VPA_CONFIGS[namespace]
+    excluded_deployments = VPA_CONFIGS[namespace]["excluded_deployments"]
     if namespace in VPA_CONFIGS and name not in excluded_deployments and vpa_enabled:
         create_vpa_for_deployment(name, namespace)
     else:
         delete_vpa_for_deployment(name, namespace)
-
 
 @kopf.on.create('autovpaconfigs', group='autoscaling.k8s.io')
 @kopf.on.update('autovpaconfigs', group='autoscaling.k8s.io')
 def handle_vpaconfig_change(spec, name, namespace, **_):
     update_vpa_configs()
     if namespace in VPA_CONFIGS:
-        excluded_deployments = VPA_CONFIGS[namespace]
+        excluded_deployments = VPA_CONFIGS[namespace]["excluded_deployments"]
         api_instance = kubernetes.client.AppsV1Api()
         deployments = api_instance.list_namespaced_deployment(namespace=namespace)
         for deployment in deployments.items:
@@ -135,7 +139,7 @@ def handle_vpaconfig_change(spec, name, namespace, **_):
 @kopf.on.delete('autovpaconfigs', group='autoscaling.k8s.io')
 def handle_vpaconfig_delete(spec, name, namespace, **_):
     if namespace in VPA_CONFIGS:
-        excluded_deployments = VPA_CONFIGS[namespace]
+        excluded_deployments = VPA_CONFIGS[namespace]["excluded_deployments"]
         api_instance = kubernetes.client.AppsV1Api()
         deployments = api_instance.list_namespaced_deployment(namespace=namespace)
         for deployment in deployments.items:
@@ -145,7 +149,6 @@ def handle_vpaconfig_delete(spec, name, namespace, **_):
             if dep_name not in excluded_deployments and vpa_enabled:
                 delete_vpa_for_deployment(dep_name, namespace)
     update_vpa_configs()
-
 
 def deep_get(dictionary, keys, default=None):
     return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."), dictionary)

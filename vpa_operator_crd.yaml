@@ -21,6 +21,13 @@ spec:
                   type: array
                   items:
                     type: string
+                updateMode:
+                  type: string
+                  enum:
+                    - "Auto"
+                    - "Off"
+                    - "Initial"
+                    - "Recreate"
   scope: Namespaced
   names:
     plural: autovpaconfigs
