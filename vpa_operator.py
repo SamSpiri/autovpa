@@ -24,9 +24,10 @@ def get_all_configs():
         for item in autovpas["items"]:
             namespace = item["metadata"]["namespace"]
             excluded_deployments = deep_get(item, ["spec","excludedDeployments"], [])
-            resource_policy = {
-              "containerPolicies": [ deep_get(item, ["spec","resourcePolicy"], {}) ]
-            }
+            resource_policy = deep_get(item, ["spec","resourcePolicy"], False)
+            if resource_policy:
+                resource_policy["containerName"] = "*"
+            resource_policy = { "containerPolicies": [ resource_policy ] }
             update_policy = deep_get(item, ["spec","updatePolicy"], {"updateMode":"Off"})
             configs[namespace] = {
                 "excluded_deployments": excluded_deployments,
