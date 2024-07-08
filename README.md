@@ -9,6 +9,23 @@ metadata:
   name: autoautovpa-operator-config
   namespace: default
 spec:
+  updatePolicy:
+    # "Off", "Initial", "Recreate", and "Auto".
+    updateMode: Off
+    minReplicas: 1
+  resourcePolicy:
+    mode: Auto
+    minAllowed:
+      cpu: 15m
+      memory: 100Mi
+    maxAllowed:
+      cpu: 1
+      memory: 20Gi
+    controlledResources:
+      - cpu
+      - memory
+    # "RequestsOnly", "RequestsAndLimits"
+    controlledValues: "RequestsOnly"
   excludedDeployments:
     - "exclude-this-deployment"
 ```
