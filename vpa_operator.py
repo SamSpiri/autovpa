@@ -26,7 +26,7 @@ def get_all_configs():
             excluded_deployments = deep_get(item, ["spec","excludedDeployments"], [])
             resource_policy = {
               "containerPolicies": [ deep_get(item, ["spec","resourcePolicy"], {}) ]
-            },
+            }
             update_policy = deep_get(item, ["spec","updatePolicy"], {"updateMode":"Off"})
             configs[namespace] = {
                 "excluded_deployments": excluded_deployments,
