@@ -6,7 +6,8 @@ metadata:
   namespace: default
 spec:
   updatePolicy:
-    updateMode: Auto
+    # "Off", "Initial", "Recreate", and "Auto".
+    updateMode: Off
     minReplicas: 1
   resourcePolicy:
     mode: Auto
@@ -17,8 +18,9 @@ spec:
       cpu: 1
       memory: 20Gi
     controlledResources:
-      - ResourceCPU
-      - ResourceMemory
+      - cpu
+      - memory
+    # "RequestsOnly", "RequestsAndLimits"
     controlledValues: "RequestsOnly"
   excludedDeployments:
     - "exclude-this-deployment"

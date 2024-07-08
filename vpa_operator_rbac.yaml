@@ -16,7 +16,7 @@ rules:
     verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["autoscaling.k8s.io"]
     resources: ["verticalpodautoscalers"]
-    verbs: ["create", "delete", "list"]
+    verbs: ["create", "delete", "list", "patch","get"]
   - apiGroups: ["autoscaling.k8s.io"]
     resources: ["autovpaconfigs"]
     verbs: ["get", "list", "watch", "update", "patch"]
