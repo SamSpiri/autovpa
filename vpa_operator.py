@@ -126,7 +126,7 @@ def update_vpa(namespace, new_config):
         for vpa in vpas["items"]:
             vpa_name = vpa["metadata"]["name"]
             vpa["spec"]["updatePolicy"] = new_config["update_policy"]
-            vpa["spec"]["resourcePolicy" = new_config["resource_policy"]
+            vpa["spec"]["resourcePolicy"] = new_config["resource_policy"]
             api_instance.patch_namespaced_custom_object(
                 group="autoscaling.k8s.io",
                 version="v1",
