@@ -60,7 +60,7 @@ def create_vpa_for_deployment(name, namespace):
             "name": name,
             "namespace": namespace
             "annotations": {
-                "autoscaling.k8s.io/autovpa-deployment": name
+                "autovpa.autoscaling.k8s.io/deployment": name
             }
         },
         "spec": {
@@ -100,7 +100,7 @@ def delete_vpa_for_deployment(name, namespace):
             name=name,
         )
 
-        if deep_get(api_response, ["metadata","annotations","autoscaling.k8s.io/autovpa-deployment"], "") == name:
+        if deep_get(api_response, ["metadata","annotations","autovpa.autoscaling.k8s.io/deployment"], "") == name:
             api_instance.delete_namespaced_custom_object(
                 group="autoscaling.k8s.io",
                 version="v1",
@@ -142,7 +142,7 @@ def update_vpa(namespace, new_config):
 @kopf.on.startup()
 def configure(settings: kopf.OperatorSettings, **_):
     settings.posting.enabled = False
-    settings.persistence.finalizer = 'autovpa.autoscaling.k8s.io/finalizer'
+    #settings.persistence.finalizer = 'autovpa.autoscaling.k8s.io/finalizer'
     update_vpa_configs()
 
 @kopf.on.create('deployments', when=filter_resources)
