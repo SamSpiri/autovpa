@@ -58,7 +58,7 @@ def create_vpa_for_deployment(name, namespace):
         "kind": "VerticalPodAutoscaler",
         "metadata": {
             "name": name,
-            "namespace": namespace
+            "namespace": namespace,
             "annotations": {
                 "autovpa.autoscaling.k8s.io/deployment": name
             }
