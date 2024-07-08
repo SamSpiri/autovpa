@@ -21,13 +21,38 @@ spec:
                   type: array
                   items:
                     type: string
-                updateMode:
-                  type: string
-                  enum:
-                    - "Auto"
-                    - "Off"
-                    - "Initial"
-                    - "Recreate"
+                resourcePolicy:
+                  type: object
+                  properties:
+                    mode:
+                      type: string
+                      enum:
+                        - "Auto"
+                        - "Off"
+                    minAllowed:
+                      type: object
+                    maxAllowed:
+                      type: object
+                    controlledValues:
+                      type: string
+                      enum: ["RequestsAndLimits", "RequestsOnly"]
+                    controlledResources:
+                      type: array
+                      items:
+                        type: string
+                        enum: [ "cpu", "memory" ]
+                updatePolicy:
+                  type: object
+                  properties:
+                    minReplicas:
+                      type: integer
+                    updateMode:
+                      type: string
+                      enum:
+                        - "Auto"
+                        - "Off"
+                        - "Initial"
+                        - "Recreate"
   scope: Namespaced
   names:
     plural: autovpaconfigs
