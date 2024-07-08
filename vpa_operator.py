@@ -15,19 +15,19 @@ def get_all_configs():
     configs = {}
     api = kubernetes.client.CustomObjectsApi()
     try:
-        crds = api.list_cluster_custom_object(
+        autovpas = api.list_cluster_custom_object(
             group="autoscaling.k8s.io",
             version="v1",
             plural="autovpaconfigs"
         )
         configs = {}
-        for item in crds["items"]:
+        for item in autovpas["items"]:
             namespace = item["metadata"]["namespace"]
             excluded_deployments = deep_get(item, ["spec","excludedDeployments"], [])
             resource_policy = {
               "containerPolicies": [ deep_get(item, ["spec","resourcePolicy"], {}) ]
             },
-            update_policy = deep_get(item, ["spec","updatePolicy"], {"update_mode":"Off"})
+            update_policy = deep_get(item, ["spec","updatePolicy"], {"updateMode":"Off"})
             configs[namespace] = {
                 "excluded_deployments": excluded_deployments,
                 "resource_policy": resource_policy,
