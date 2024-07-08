@@ -85,7 +85,7 @@ def create_vpa_for_deployment(name, namespace):
         logger.info(f"VPA created for deployment {name} in namespace {namespace}")
     except ApiException as e:
         if e.status != 409:  # Ignore conflict errors if the VPA already exists
-            logger.error(f"Failed to create VPA for deployment {name} in namespace {namespace}: {e}")
+            logger.error(f"Failed to create VPA for deployment {name} in namespace {namespace}: {e} \n Request: {vpa_body}")
 
 def delete_vpa_for_deployment(name, namespace):
     api_instance = kubernetes.client.CustomObjectsApi()
@@ -137,7 +137,7 @@ def update_vpa(namespace, new_config):
             )
             logger.info(f"VPA {vpa_name} in namespace {namespace} updated with new configuration")
     except ApiException as e:
-        logger.error(f"Failed to update VPAs in namespace {namespace} with new configuration: {e}")
+        logger.error(f"Failed to update VPAs in namespace {namespace} with new configuration: {e} \n Request: {vpa}")
 
 @kopf.on.startup()
 def configure(settings: kopf.OperatorSettings, **_):

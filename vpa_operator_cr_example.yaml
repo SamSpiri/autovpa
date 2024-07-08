@@ -16,9 +16,9 @@ spec:
     maxAllowed:
       cpu: 1
       memory: 20Gi
-    ControlledResources:
+    controlledResources:
       - ResourceCPU
       - ResourceMemory
-    ControlledValues: "Requests"
+    controlledValues: "RequestsOnly"
   excludedDeployments:
     - "exclude-this-deployment"
