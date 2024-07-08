@@ -18,3 +18,8 @@ spec:
         - name: autovpa-operator
           image: doomstar/autovpa:latest
           imagePullPolicy: Always
+          args:
+            - kopf
+            - run
+            - /vpa_operator.py
+            - '--all-namespaces'
